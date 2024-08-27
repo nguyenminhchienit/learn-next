@@ -15,8 +15,11 @@ import {
 import { Input } from "@/components/ui/input";
 import envConfig from "@/configs/config";
 import { LoginBody, LoginBodyType } from "@/schemaValidations/auth.schema";
+import { useToast } from "@/components/ui/use-toast";
 
 const LoginForm = () => {
+  const { toast } = useToast();
+
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
     defaultValues: {
@@ -27,18 +30,53 @@ const LoginForm = () => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: LoginBodyType) {
-    const result = await fetch(
-      `${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/login`,
-      {
-        body: JSON.stringify(values),
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    ).then((res) => res.json());
+    try {
+      const result = await fetch(
+        `${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/login`,
+        {
+          body: JSON.stringify(values),
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      ).then(async (res) => {
+        const payload = await res.json();
+        const data = {
+          status: res.status,
+          payload,
+        };
 
-    console.log("res: ", result);
+        if (!res.ok) {
+          throw data;
+        }
+        return data;
+      });
+      toast({
+        description: result.payload.message,
+      });
+    } catch (error: any) {
+      const errors = error.payload.errors as {
+        field: string;
+        message: string;
+      }[];
+      const status = error.status as number;
+      console.log("ok: ", errors);
+      if (status === 422) {
+        errors.forEach((error) => {
+          form.setError(error.field as "email" | "password", {
+            type: "server",
+            message: error.message,
+          });
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Lỗi",
+          description: error.payload.message,
+        });
+      }
+    }
   }
 
   return (
