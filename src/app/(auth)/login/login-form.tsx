@@ -55,13 +55,32 @@ const LoginForm = () => {
       toast({
         description: result.payload.message,
       });
+      const resultFromNextServer = await fetch("/api/auth", {
+        body: JSON.stringify(result?.payload?.data?.token),
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then(async (res) => {
+        const payload = await res.json();
+        const data = {
+          status: res.status,
+          payload,
+        };
+
+        if (!res.ok) {
+          throw data;
+        }
+        return data;
+      });
+      console.log("result login: ", resultFromNextServer);
     } catch (error: any) {
       const errors = error.payload.errors as {
         field: string;
         message: string;
       }[];
       const status = error.status as number;
-      console.log("ok: ", errors);
+
       if (status === 422) {
         errors.forEach((error) => {
           form.setError(error.field as "email" | "password", {

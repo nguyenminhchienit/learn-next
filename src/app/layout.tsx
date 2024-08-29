@@ -3,6 +3,8 @@ import { Roboto } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
+import { cookies } from "next/headers";
+import AppProvider from "./AppProvider";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -19,6 +21,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = cookies();
+  const sessionToken = cookieStore.get("sessionToken");
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={roboto.className}>
@@ -29,7 +33,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Toaster />
-          {children}
+          <AppProvider initialSessionToken={sessionToken?.value}>
+            {children}
+          </AppProvider>
         </ThemeProvider>
       </body>
     </html>
