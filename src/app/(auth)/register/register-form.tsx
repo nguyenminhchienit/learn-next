@@ -16,7 +16,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import envConfig from "@/configs/config";
+import authApiRequest from "@/apiRequests/auth";
+import { useRouter } from "next/navigation";
 
 const RegisterForm = () => {
   const form = useForm<RegisterBodyType>({
@@ -29,22 +30,14 @@ const RegisterForm = () => {
     },
   });
 
+  const router = useRouter();
+
   // 2. Define a submit handler.
   async function onSubmit(values: RegisterBodyType) {
-    const result = await fetch(
-      `${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/register`,
-      {
-        body: JSON.stringify(values),
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    ).then((res) => res.json());
-
-    console.log("result: ", result);
+    const result = await authApiRequest.register(values);
+    router.push("/login");
+    console.log("result register: ", result);
   }
-
   return (
     <Form {...form}>
       <form

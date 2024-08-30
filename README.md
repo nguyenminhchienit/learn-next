@@ -34,3 +34,52 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+try {
+const result = await authApiRequest.login(values)
+toast({
+description: result.payload.message,
+});
+const resultFromNextServer = await fetch("/api/auth", {
+body: JSON.stringify(result?.payload?.data?.token),
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+},
+}).then(async (res) => {
+const payload = await res.json();
+const data = {
+status: res.status,
+payload,
+};
+
+        if (!res.ok) {
+          throw data;
+        }
+        return data;
+      });
+      console.log("result login: ", resultFromNextServer);
+    } catch (error: any) {
+      const errors = error.payload.errors as {
+        field: string;
+        message: string;
+      }[];
+      const status = error.status as number;
+
+      if (status === 422) {
+        errors.forEach((error) => {
+          form.setError(error.field as "email" | "password", {
+            type: "server",
+            message: error.message,
+          });
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Lỗi",
+          description: error.payload.message,
+        });
+      }
+    }
+
+}

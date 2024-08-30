@@ -16,9 +16,13 @@ import { Input } from "@/components/ui/input";
 import envConfig from "@/configs/config";
 import { LoginBody, LoginBodyType } from "@/schemaValidations/auth.schema";
 import { useToast } from "@/components/ui/use-toast";
+import authApiRequest from "@/apiRequests/auth";
+import { useRouter } from "next/navigation";
+import { clientSessionToken } from "@/lib/http";
 
 const LoginForm = () => {
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
@@ -31,48 +35,15 @@ const LoginForm = () => {
   // 2. Define a submit handler.
   async function onSubmit(values: LoginBodyType) {
     try {
-      const result = await fetch(
-        `${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/login`,
-        {
-          body: JSON.stringify(values),
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      ).then(async (res) => {
-        const payload = await res.json();
-        const data = {
-          status: res.status,
-          payload,
-        };
-
-        if (!res.ok) {
-          throw data;
-        }
-        return data;
-      });
+      const result = await authApiRequest.login(values);
       toast({
         description: result.payload.message,
       });
-      const resultFromNextServer = await fetch("/api/auth", {
-        body: JSON.stringify(result?.payload?.data?.token),
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then(async (res) => {
-        const payload = await res.json();
-        const data = {
-          status: res.status,
-          payload,
-        };
-
-        if (!res.ok) {
-          throw data;
-        }
-        return data;
-      });
+      const resultFromNextServer = await authApiRequest.auth(
+        result?.payload?.data?.token
+      );
+      clientSessionToken.value = result?.payload?.data?.token;
+      router.push("/account");
       console.log("result login: ", resultFromNextServer);
     } catch (error: any) {
       const errors = error.payload.errors as {
