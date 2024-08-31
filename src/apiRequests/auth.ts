@@ -5,6 +5,7 @@ import {
   RegisterBodyType,
   RegisterResType,
 } from "@/schemaValidations/auth.schema";
+import { MessageResType } from "@/schemaValidations/common.schema";
 
 const authApiRequest = {
   login: (body: LoginBodyType) => {
@@ -17,6 +18,26 @@ const authApiRequest = {
     return http.post("/api/auth", body, {
       baseUrl: "",
     });
+  },
+  logoutNextServerToServer: (sessionToken: string) => {
+    return http.post<MessageResType>(
+      "/auth/logout",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${sessionToken}`,
+        },
+      }
+    );
+  },
+  logoutNextClientToNextServer: () => {
+    return http.post<MessageResType>(
+      "/api/auth/logout",
+      {},
+      {
+        baseUrl: "",
+      }
+    );
   },
 };
 

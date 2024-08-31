@@ -1,5 +1,6 @@
 import envConfig from "@/configs/config";
 import { LoginResType } from "@/schemaValidations/auth.schema";
+import { normalizeString } from "./utils";
 
 const ENTITY_ERROR_STATUS = 422;
 
@@ -11,7 +12,7 @@ type EntityErrorPayload = {
   }[];
 };
 
-class HttpError extends Error {
+export class HttpError extends Error {
   status: number;
   payload: {
     message: string;
@@ -113,10 +114,16 @@ const request = async <Response>(
     }
   }
 
-  if (["/auth/login", "/auth/register"].includes(url)) {
-    clientSessionToken.value = (payload as LoginResType).data.token;
-  } else if ("/auth/logout".includes(url)) {
-    clientSessionToken.value = "";
+  if (typeof window !== "undefined") {
+    if (
+      ["auth/login", "auth/register"].some(
+        (path) => path === normalizeString(url)
+      )
+    ) {
+      clientSessionToken.value = (payload as LoginResType).data.token;
+    } else if ("auth/logout" === normalizeString(url)) {
+      clientSessionToken.value = "";
+    }
   }
   return data;
 };

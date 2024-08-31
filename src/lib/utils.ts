@@ -34,3 +34,7 @@ export const handleErrorApi = ({
     });
   }
 };
+
+export const normalizeString = (url: string) => {
+  return url.startsWith("/") ? url.slice(1) : url;
+};
