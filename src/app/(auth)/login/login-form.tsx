@@ -40,9 +40,10 @@ const LoginForm = () => {
       toast({
         description: result.payload.message,
       });
-      const resultFromNextServer = await authApiRequest.auth(
-        result?.payload?.data?.token
-      );
+      const resultFromNextServer = await authApiRequest.auth({
+        sessionToken: result?.payload?.data?.token,
+        expiresAt: result?.payload?.data?.expiresAt,
+      });
       clientSessionToken.value = result?.payload?.data?.token;
       router.push("/account");
       console.log("result login: ", resultFromNextServer);

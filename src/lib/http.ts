@@ -45,6 +45,7 @@ export class EntityError extends HttpError {
 
 class sessionToken {
   private token: string = "";
+  private _expiresAt = new Date().toISOString();
   get value() {
     return this.token;
   }
@@ -53,6 +54,15 @@ class sessionToken {
       throw new Error("Cannot set token in server");
     }
     this.token = value;
+  }
+  get expiresAt() {
+    return this._expiresAt;
+  }
+  set expiresAt(value: string) {
+    if (typeof window === "undefined") {
+      throw new Error("Cannot set token in server");
+    }
+    this._expiresAt = value;
   }
 }
 
@@ -124,6 +134,7 @@ const request = async <Response>(
           });
           await clientLogoutRequest;
           clientSessionToken.value = "";
+          clientSessionToken.expiresAt = new Date().toISOString();
           location.href = "/login";
         }
       } else {
@@ -144,8 +155,10 @@ const request = async <Response>(
       )
     ) {
       clientSessionToken.value = (payload as LoginResType).data.token;
+      clientSessionToken.expiresAt = (payload as LoginResType).data.expiresAt;
     } else if ("auth/logout" === normalizeString(url)) {
       clientSessionToken.value = "";
+      clientSessionToken.expiresAt = new Date().toISOString();
     }
   }
   return data;

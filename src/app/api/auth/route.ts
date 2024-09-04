@@ -1,22 +1,14 @@
-import { decodeJWT } from "@/lib/utils";
-
-type PayloadJWT = {
-  iat: number;
-  exp: number;
-  tokenType: string;
-  userId: number;
-};
-
 export async function POST(req: Request) {
-  const res = await req.json();
-  const sessionToken = res;
+  const body = await req.json();
+  const sessionToken = body.sessionToken as string;
+  const expiresAt = body.expiresAt as string;
   if (!sessionToken) {
     return Response.json({ message: "SessionToken Invalid" }, { status: 400 });
   }
-  const payload = decodeJWT<PayloadJWT>(sessionToken);
-  const expiresDate = new Date(payload.exp * 1000).toUTCString();
+
+  const expiresDate = new Date(expiresAt).toUTCString();
   return Response.json(
-    { res },
+    { body },
     {
       status: 200,
       headers: {

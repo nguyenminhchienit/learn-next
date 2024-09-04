@@ -3,10 +3,11 @@ import React from "react";
 import { Button } from "./ui/button";
 import { handleErrorApi } from "@/lib/utils";
 import authApiRequest from "@/apiRequests/auth";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const ButtonCustom = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const handleLogout = async () => {
     try {
       await authApiRequest.logoutNextClientToNextServer();
@@ -14,6 +15,9 @@ const ButtonCustom = () => {
     } catch (error) {
       handleErrorApi({
         error,
+      });
+      authApiRequest.logoutNextClientToNextServer(true).then((res) => {
+        router.push(`/login?redirectFrom=${pathname}`);
       });
     }
   };
