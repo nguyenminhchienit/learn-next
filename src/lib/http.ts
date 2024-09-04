@@ -1,8 +1,10 @@
 import envConfig from "@/configs/config";
 import { LoginResType } from "@/schemaValidations/auth.schema";
 import { normalizeString } from "./utils";
+import { redirect } from "next/navigation";
 
 const ENTITY_ERROR_STATUS = 422;
+const HTTP_AUTH_STATUS = 401;
 
 type EntityErrorPayload = {
   message: string;
@@ -60,6 +62,7 @@ type CustomRequest = RequestInit & {
   baseUrl?: string | undefined;
 };
 
+let clientLogoutRequest: null | Promise<any> = null;
 const request = async <Response>(
   method: "POST" | "GET" | "DELETE" | "PUT" | "PATCH",
   url: string,
@@ -109,6 +112,26 @@ const request = async <Response>(
           payload: EntityErrorPayload;
         }
       );
+    } else if (res.status === HTTP_AUTH_STATUS) {
+      if (typeof window !== "undefined") {
+        if (!clientLogoutRequest) {
+          clientLogoutRequest = fetch("api/auth/logout", {
+            method: "POST",
+            headers: {
+              ...baseHeaders,
+            },
+            body: JSON.stringify({ force: true }),
+          });
+          await clientLogoutRequest;
+          clientSessionToken.value = "";
+          location.href = "/login";
+        }
+      } else {
+        const sessionTokenToServer = (
+          options?.headers as any
+        )?.Authorization.split("Bearer ")[1];
+        redirect(`/logout?sessionToken=${sessionTokenToServer}`);
+      }
     } else {
       throw new HttpError(data);
     }

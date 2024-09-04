@@ -30,12 +30,16 @@ const authApiRequest = {
       }
     );
   },
-  logoutNextClientToNextServer: () => {
+  logoutNextClientToNextServer: (
+    force?: boolean | undefined,
+    signal?: AbortSignal | undefined
+  ) => {
     return http.post<MessageResType>(
       "/api/auth/logout",
-      {},
+      { force },
       {
         baseUrl: "",
+        signal,
       }
     );
   },

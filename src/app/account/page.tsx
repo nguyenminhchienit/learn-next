@@ -12,7 +12,7 @@ const Profile = async () => {
   return (
     <div>
       Profile of: {result?.payload?.data?.name}
-      <ProfileClient />
+      {/* <ProfileClient /> */}
       <ButtonCustom />
     </div>
   );
