@@ -22,7 +22,7 @@ const ButtonCustom = () => {
     }
   };
   return (
-    <Button size={"sm"} onClick={handleLogout}>
+    <Button size={"sm"} className="flex flex-shrink-0" onClick={handleLogout}>
       Logout
     </Button>
   );

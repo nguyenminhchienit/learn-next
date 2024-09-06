@@ -46,6 +46,7 @@ const LoginForm = () => {
       });
       clientSessionToken.value = result?.payload?.data?.token;
       router.push("/account");
+      router.refresh();
       console.log("result login: ", resultFromNextServer);
     } catch (error: any) {
       handleErrorApi({
