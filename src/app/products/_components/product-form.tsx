@@ -19,13 +19,17 @@ import { handleErrorApi } from "@/lib/utils";
 import {
   CreateProductBody,
   CreateProductBodyType,
+  ProductResType,
+  UpdateProductBodyType,
 } from "@/schemaValidations/product.schema";
 import productApiRequest from "@/apiRequests/product";
 import { Textarea } from "@/components/ui/textarea";
 import { useRef, useState } from "react";
 import Image from "next/image";
 
-const ProductForm = () => {
+type Product = ProductResType["data"];
+
+const ProductForm = ({ product }: { product?: Product }) => {
   const [file, setFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { toast } = useToast();
@@ -34,15 +38,16 @@ const ProductForm = () => {
   const form = useForm<CreateProductBodyType>({
     resolver: zodResolver(CreateProductBody),
     defaultValues: {
-      name: "",
-      price: 0,
-      description: "",
-      image: "",
+      name: product?.name || "",
+      price: product?.price || 0,
+      description: product?.description || "",
+      image: product?.image || "",
     },
   });
 
-  // 2. Define a submit handler.
-  async function onSubmit(values: CreateProductBodyType) {
+  const imgDefault = form.watch("image");
+
+  const createProduct = async (values: CreateProductBodyType) => {
     try {
       const formData = new FormData();
       formData.append("file", file as Blob);
@@ -58,12 +63,52 @@ const ProductForm = () => {
       });
       console.log("product: ", result);
       router.push("/products");
+    } catch (error: any) {
+      handleErrorApi({
+        error,
+        setError: form.setError,
+      });
+    }
+  };
+
+  const updateProduct = async (_values: UpdateProductBodyType) => {
+    if (!product) {
+      return;
+    }
+    let values = _values;
+    try {
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file as Blob);
+        const uploadMedia = await productApiRequest.uploadMedia(formData);
+        const imgUrl = uploadMedia?.payload?.data;
+        values = {
+          ...values,
+          image: imgUrl,
+        };
+      }
+
+      const result = await productApiRequest.update(product.id, values);
+      toast({
+        description: result.payload.message,
+      });
+      console.log("product: ", result);
+      router.push("/products");
       router.refresh();
     } catch (error: any) {
       handleErrorApi({
         error,
         setError: form.setError,
       });
+    }
+  };
+
+  // 2. Define a submit handler.
+  async function onSubmit(values: CreateProductBodyType) {
+    if (product) {
+      await updateProduct(values);
+    } else {
+      await createProduct(values);
     }
   }
 
@@ -139,14 +184,14 @@ const ProductForm = () => {
           )}
         />
 
-        {file && (
+        {(file || imgDefault) && (
           <div>
             <Image
-              src={URL.createObjectURL(file)}
+              src={file ? URL.createObjectURL(file) : imgDefault}
               width={128}
               height={128}
               alt="preview"
-              className="w-32 h-32 object-cover"
+              className="w-32 h-32 object-cover mb-3"
             />
             <Button
               type="button"
@@ -166,7 +211,7 @@ const ProductForm = () => {
         )}
 
         <Button type="submit" className="w-full !mt-8">
-          Đăng nhập
+          {product ? "Update product" : "Add product"}
         </Button>
       </form>
     </Form>

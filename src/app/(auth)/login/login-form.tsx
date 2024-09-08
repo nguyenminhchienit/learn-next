@@ -45,6 +45,7 @@ const LoginForm = () => {
         expiresAt: result?.payload?.data?.expiresAt,
       });
       clientSessionToken.value = result?.payload?.data?.token;
+      console.log(clientSessionToken);
       router.push("/account");
       router.refresh();
       console.log("result login: ", resultFromNextServer);

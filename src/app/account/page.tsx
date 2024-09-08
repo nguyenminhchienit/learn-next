@@ -3,6 +3,7 @@ import React from "react";
 import accountApiRequest from "@/apiRequests/account";
 import ButtonCustom from "@/components/button";
 import ProfileForm from "./profile-form";
+import ProfileClient from "./profile";
 
 const Profile = async () => {
   const cookieStore = cookies();
@@ -16,6 +17,7 @@ const Profile = async () => {
       <div>
         <ButtonCustom />
       </div>
+      <ProfileClient />
     </div>
   );
 };
