@@ -4,8 +4,12 @@ import { Button } from "./ui/button";
 import { handleErrorApi } from "@/lib/utils";
 import authApiRequest from "@/apiRequests/auth";
 import { usePathname, useRouter } from "next/navigation";
+import { useAppContext } from "@/app/AppProvider";
 
 const ButtonCustom = () => {
+  const { user } = useAppContext();
+  console.log("user api context: ", user);
+
   const router = useRouter();
   const pathname = usePathname();
   const handleLogout = async () => {

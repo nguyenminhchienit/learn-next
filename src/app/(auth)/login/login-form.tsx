@@ -20,10 +20,12 @@ import authApiRequest from "@/apiRequests/auth";
 import { useRouter } from "next/navigation";
 import { clientSessionToken } from "@/lib/http";
 import { handleErrorApi } from "@/lib/utils";
+import { useAppContext } from "@/app/AppProvider";
 
 const LoginForm = () => {
   const { toast } = useToast();
   const router = useRouter();
+  const { setUser } = useAppContext();
 
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
@@ -47,8 +49,8 @@ const LoginForm = () => {
       clientSessionToken.value = result?.payload?.data?.token;
       console.log(clientSessionToken);
       router.push("/");
+      setUser(result.payload.data.account);
       router.refresh();
-      console.log("result login: ", resultFromNextServer);
     } catch (error: any) {
       handleErrorApi({
         error,

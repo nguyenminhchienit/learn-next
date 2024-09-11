@@ -1,17 +1,13 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
-import accountApiRequest from "@/apiRequests/account";
 import ButtonCustom from "./button";
 import { ModeToggle } from "./toggle-mode";
+import { AccountResType } from "@/schemaValidations/account.schema";
 
-export default async function Header() {
-  const cookieStore = cookies();
-  const sessionToken = cookieStore.get("sessionToken")?.value;
-  let user = null;
-  if (sessionToken) {
-    const data = await accountApiRequest.account(sessionToken);
-    user = data.payload.data;
-  }
+export default async function Header({
+  user,
+}: {
+  user: AccountResType["data"] | null;
+}) {
   return (
     <div>
       <ul className="flex space-x-4">
@@ -21,9 +17,9 @@ export default async function Header() {
         {user ? (
           <>
             <li>
-              <div>
+              <Link href={"/account"}>
                 Xin chào <strong>{user.name}</strong>
-              </div>
+              </Link>
             </li>
             <li>
               <ButtonCustom />
