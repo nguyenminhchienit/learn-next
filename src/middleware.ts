@@ -4,6 +4,8 @@ import type { NextRequest } from "next/server";
 const privatePaths = ["/account"];
 const authPaths = ["/login", "/register"];
 
+const productEditRegex = /^\/products\/\d+\/edit$/;
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const sessionToken = request?.cookies.get("sessionToken");
@@ -15,10 +17,13 @@ export function middleware(request: NextRequest) {
   if (authPaths.some((path) => path.startsWith(pathname)) && sessionToken) {
     return NextResponse.redirect(new URL("/account", request.url));
   }
+  if (pathname.match(productEditRegex) && !sessionToken) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
   return NextResponse.next();
 }
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/account", "/login", "/register"],
+  matcher: ["/account", "/login", "/register", "/products/:path*"],
 };

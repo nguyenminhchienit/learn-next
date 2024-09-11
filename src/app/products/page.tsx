@@ -44,17 +44,19 @@ export default async function ProductList() {
               <TableCell>{product?.price}</TableCell>
               <TableCell>{product?.description}</TableCell>
               <TableCell className="text-right">
-                <Image
-                  src={product?.image}
-                  alt="img"
-                  width={180}
-                  height={180}
-                  className="w-18 h-18 object-cover"
-                />
+                <Link href={`products/${product?.id}`}>
+                  <Image
+                    src={product?.image}
+                    alt="img"
+                    width={180}
+                    height={180}
+                    className="w-18 h-18 object-cover"
+                  />
+                </Link>
               </TableCell>
               <TableCell>
                 <div className="flex gap-3">
-                  <Link href={`products/${product?.id}`}>
+                  <Link href={`products/${product?.id}/edit`}>
                     <Button variant={"secondary"}>Edit</Button>
                   </Link>
                   <DeleteProduct product={product} />
