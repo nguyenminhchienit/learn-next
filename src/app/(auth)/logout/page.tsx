@@ -16,7 +16,7 @@ const LogoutAuto = () => {
     const signal = controller.signal;
     if (sessionToken === clientSessionToken.value) {
       authApiRequest.logoutNextClientToNextServer(true, signal).then((res) => {
-        router.push("/login");
+        router.push("/");
       });
     }
     return () => {

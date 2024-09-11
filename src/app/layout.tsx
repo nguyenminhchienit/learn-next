@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { cookies } from "next/headers";
 import AppProvider from "./AppProvider";
+import Header from "@/components/header";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -34,6 +35,7 @@ export default function RootLayout({
         >
           <Toaster />
           <AppProvider initialSessionToken={sessionToken?.value}>
+            <Header />
             {children}
           </AppProvider>
         </ThemeProvider>

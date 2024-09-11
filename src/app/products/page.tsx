@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { cookies } from "next/headers";
 import { clientSessionToken } from "@/lib/http";
 import Link from "next/link";
+import DeleteProduct from "./_components/btn-delete-product";
 
 export default async function ProductList() {
   const cookieStore = cookies();
@@ -56,7 +57,7 @@ export default async function ProductList() {
                   <Link href={`products/${product?.id}`}>
                     <Button variant={"secondary"}>Edit</Button>
                   </Link>
-                  <Button variant={"destructive"}>Delete</Button>
+                  <DeleteProduct product={product} />
                 </div>
               </TableCell>
             </TableRow>

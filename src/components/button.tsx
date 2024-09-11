@@ -19,6 +19,8 @@ const ButtonCustom = () => {
       authApiRequest.logoutNextClientToNextServer(true).then((res) => {
         router.push(`/login?redirectFrom=${pathname}`);
       });
+    } finally {
+      router.refresh();
     }
   };
   return (
