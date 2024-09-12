@@ -1,4 +1,5 @@
 import productApiRequest from "@/apiRequests/product";
+import envConfig from "@/configs/config";
 import { Metadata, ResolvingMetadata } from "next";
 import Image from "next/image";
 import React from "react";
@@ -17,10 +18,26 @@ export async function generateMetadata(
 
   const { payload } = await productApiRequest.getDetail(productId);
   const product = payload.data;
+  const url = envConfig.NEXT_PUBLIC_URL_CLIENT + "/products/" + product.id;
 
   return {
     title: product?.name,
     description: product?.description,
+    openGraph: {
+      title: product?.name,
+      description: product?.description,
+      url: url,
+      siteName: "Takis Tech",
+      images: [
+        {
+          url: "https://scontent.fsgn16-1.fna.fbcdn.net/v/t39.30808-6/342402239_630184425141651_4049981349969707724_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=XMOAASgQjE0Q7kNvgFQv2nT&_nc_ht=scontent.fsgn16-1.fna&_nc_gid=AZRJ9WfRfPKSqZdl8LSuA6z&oh=00_AYCvPYMYYuGHIJ4LLfNQA4ANAK-xmRssWGHPEH9bCsoDAg&oe=66E8C0CD", // Must be an absolute URL
+          width: 800,
+          height: 600,
+        },
+      ],
+      locale: "en_US",
+      type: "website",
+    },
   };
 }
 
