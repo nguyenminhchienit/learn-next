@@ -1,8 +1,30 @@
 import productApiRequest from "@/apiRequests/product";
+import { Metadata, ResolvingMetadata } from "next";
 import Image from "next/image";
 import React from "react";
 
-const ProductDetailAll = async ({ params }: { params: { id: string } }) => {
+type Props = {
+  params: { id: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+
+export async function generateMetadata(
+  { params, searchParams }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const id = params.id;
+  const productId = Number(params?.id);
+
+  const { payload } = await productApiRequest.getDetail(productId);
+  const product = payload.data;
+
+  return {
+    title: product?.name,
+    description: product?.description,
+  };
+}
+
+const ProductDetailAll = async ({ params }: Props) => {
   const productId = Number(params?.id);
   let product = null;
   try {
