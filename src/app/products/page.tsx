@@ -13,7 +13,6 @@ import {
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { cookies } from "next/headers";
-import { clientSessionToken } from "@/lib/http";
 import Link from "next/link";
 import DeleteProduct from "./_components/btn-delete-product";
 

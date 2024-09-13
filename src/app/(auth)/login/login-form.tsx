@@ -18,7 +18,6 @@ import { LoginBody, LoginBodyType } from "@/schemaValidations/auth.schema";
 import { useToast } from "@/components/ui/use-toast";
 import authApiRequest from "@/apiRequests/auth";
 import { useRouter } from "next/navigation";
-import { clientSessionToken } from "@/lib/http";
 import { handleErrorApi } from "@/lib/utils";
 import { useAppContext } from "@/app/AppProvider";
 
@@ -46,8 +45,7 @@ const LoginForm = () => {
         sessionToken: result?.payload?.data?.token,
         expiresAt: result?.payload?.data?.expiresAt,
       });
-      clientSessionToken.value = result?.payload?.data?.token;
-      console.log(clientSessionToken);
+      //clientSessionToken.value = result?.payload?.data?.token;
       router.push("/");
       setUser(result.payload.data.account);
       router.refresh();

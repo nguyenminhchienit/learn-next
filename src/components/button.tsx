@@ -25,6 +25,8 @@ const ButtonCustom = () => {
       });
     } finally {
       router.refresh();
+      localStorage.removeItem("sessionToken");
+      localStorage.removeItem("sessionTokenExpiresAt");
     }
   };
   return (

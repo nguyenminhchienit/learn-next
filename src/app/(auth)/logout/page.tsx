@@ -1,11 +1,10 @@
 "use client";
 import authApiRequest from "@/apiRequests/auth";
-import { clientSessionToken } from "@/lib/http";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 
-const LogoutAuto = () => {
+const LogoutLogic = () => {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -14,7 +13,8 @@ const LogoutAuto = () => {
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
-    if (sessionToken === clientSessionToken.value) {
+
+    if (sessionToken === localStorage.getItem("sessionToken")) {
       authApiRequest.logoutNextClientToNextServer(true, signal).then((res) => {
         router.push("/");
       });
@@ -24,6 +24,14 @@ const LogoutAuto = () => {
     };
   }, [sessionToken, router]);
   return <div></div>;
+};
+
+const LogoutAuto = () => {
+  return (
+    <Suspense>
+      <LogoutLogic />
+    </Suspense>
+  );
 };
 
 export default LogoutAuto;

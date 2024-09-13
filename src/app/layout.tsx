@@ -8,6 +8,7 @@ import AppProvider from "./AppProvider";
 import Header from "@/components/header";
 import accountApiRequest from "@/apiRequests/account";
 import { AccountResType } from "@/schemaValidations/account.schema";
+import SlideSession from "@/components/slide-session";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -27,13 +28,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = cookies();
-  const sessionToken = cookieStore.get("sessionToken");
   let user: AccountResType["data"] | null = null;
-  if (sessionToken) {
-    const data = await accountApiRequest.account(sessionToken?.value);
-    user = data.payload.data;
-  }
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={roboto.className}>
@@ -44,9 +40,10 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <Toaster />
-          <AppProvider initialSessionToken={sessionToken?.value} user={user}>
+          <AppProvider user={user}>
             <Header user={user} />
             {children}
+            <SlideSession />
           </AppProvider>
         </ThemeProvider>
       </body>
